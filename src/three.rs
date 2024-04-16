@@ -1,23 +1,33 @@
 use std::cmp::Ordering;
 
-type Link = Box<Node>;
-struct Node {
-    elem: i32,
-    right: Option<Link>,
-    left: Option<Link>,
+type Link<T> = Box<Node<T>>;
+
+struct Node<T: Ord>
+where
+    T: Ord + std::fmt::Display,
+{
+    elem: T,
+    right: Option<Link<T>>,
+    left: Option<Link<T>>,
     count: u32,
 }
 
-pub struct Three {
-    root: Option<Link>,
+pub struct Three<T>
+where
+    T: Ord + std::fmt::Display,
+{
+    root: Option<Link<T>>,
 }
 
-impl Three {
+impl<T> Three<T>
+where
+    T: Ord + std::fmt::Display,
+{
     pub fn new() -> Self {
         Self { root: None }
     }
 
-    pub fn add(&mut self, elem: i32) {
+    pub fn add(&mut self, elem: T) {
         match self.root.as_mut() {
             Some(root) => add_recursive(root, elem),
             None => self.root = Node::new(elem),
@@ -28,7 +38,7 @@ impl Three {
         self.print_recursive(self.root.as_ref())
     }
 
-    fn print_recursive(&self, nodo: Option<&Box<Node>>) {
+    fn print_recursive(&self, nodo: Option<&Box<Node<T>>>) {
         match nodo {
             Some(nodo) => {
                 println!("elem: {}, count: {}", nodo.elem, nodo.count);
@@ -45,7 +55,10 @@ impl Three {
     }
 }
 
-fn add_recursive(nodo: &mut Box<Node>, elem: i32) {
+fn add_recursive<T>(nodo: &mut Box<Node<T>>, elem: T)
+where
+    T: Ord + std::fmt::Display,
+{
     match elem.cmp(&nodo.elem) {
         Ordering::Greater => match nodo.right.as_mut() {
             Some(right_nodo) => add_recursive(right_nodo, elem),
@@ -61,8 +74,11 @@ fn add_recursive(nodo: &mut Box<Node>, elem: i32) {
     }
 }
 
-impl Node {
-    fn new(elem: i32) -> Option<Box<Self>> {
+impl<T> Node<T>
+where
+    T: Ord + std::fmt::Display,
+{
+    fn new(elem: T) -> Option<Box<Self>> {
         Some(Box::new(Self {
             elem,
             left: None,
